@@ -3,6 +3,42 @@ use std::{
     io,
 };
 
+fn solution(
+    building_time: &Vec<u32>,
+    path: &HashMap<usize, HashSet<usize>>,
+    target_index: usize,
+) -> u32 {
+    let mut building_offset: Vec<Option<u32>> = vec![None; building_time.len()];
+    loop {
+        if let Some(result) = building_offset[target_index] {
+            return result;
+        }
+        building_offset = building_offset
+            .iter()
+            .enumerate()
+            .map(|(index, &option)| {
+                if option != None {
+                    return option;
+                }
+                if let Some(set) = path.get(&index) {
+                    if set.iter().all(|&index| building_offset[index] != None) {
+                        Some(
+                            set.iter()
+                                .map(|&index| building_offset[index].unwrap())
+                                .fold(0, |acc, curr| acc.max(curr))
+                                + building_time[index],
+                        )
+                    } else {
+                        None
+                    }
+                } else {
+                    Some(building_time[index])
+                }
+            })
+            .collect()
+    }
+}
+
 fn main() {
     let mut line = String::new();
     io::stdin().read_line(&mut line).unwrap();
@@ -39,35 +75,6 @@ fn main() {
         io::stdin().read_line(&mut line).unwrap();
         let target_index = line.trim().parse::<usize>().unwrap() - 1;
 
-        let mut building_offset: Vec<Option<u32>> = vec![None; building_time.len()];
-        loop {
-            if let Some(result) = building_offset[target_index] {
-                println!("{}", result);
-                break;
-            }
-            building_offset = building_offset
-                .iter()
-                .enumerate()
-                .map(|(index, &option)| {
-                    if option != None {
-                        return option;
-                    }
-                    if let Some(set) = path.get(&index) {
-                        if set.iter().all(|&index| building_offset[index] != None) {
-                            Some(
-                                set.iter()
-                                    .map(|&index| building_offset[index].unwrap())
-                                    .fold(0, |acc, curr| acc.max(curr))
-                                    + building_time[index],
-                            )
-                        } else {
-                            None
-                        }
-                    } else {
-                        Some(building_time[index])
-                    }
-                })
-                .collect();
-        }
+        println!("{}", solution(&building_time, &path, target_index));
     }
 }

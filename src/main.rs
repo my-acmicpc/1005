@@ -46,7 +46,7 @@ fn main() {
     for _ in 0..test_case_count {
         let mut line = String::new();
         io::stdin().read_line(&mut line).unwrap();
-        let mut iter = line.trim().split(' ').flat_map(|x| x.parse::<usize>());
+        let mut iter = line.trim().split(' ').flat_map(&str::parse::<usize>);
         iter.next();
         let path_count = iter.next().unwrap();
         let mut line = String::new();
@@ -54,13 +54,13 @@ fn main() {
         let building_time = line
             .trim()
             .split(' ')
-            .flat_map(|x| x.parse::<u32>())
+            .flat_map(&str::parse::<u32>)
             .collect::<Vec<_>>();
         let mut path: HashMap<usize, HashSet<usize>> = HashMap::new();
         for _ in 0..path_count {
             let mut line = String::new();
             io::stdin().read_line(&mut line).unwrap();
-            let mut iter = line.trim().split(' ').flat_map(|x| x.parse::<usize>());
+            let mut iter = line.trim().split(' ').flat_map(&str::parse::<usize>);
             let precondition = iter.next().unwrap() - 1;
             let target = iter.next().unwrap() - 1;
             if let Some(set) = path.get_mut(&target) {
